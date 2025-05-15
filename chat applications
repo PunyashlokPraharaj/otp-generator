@@ -1,0 +1,148 @@
+#include <iostream>
+#include <unordered_map>
+#include <queue>
+#include <vector>
+#include <string>
+#include <set>
+
+using namespace std;
+
+// User class
+class User {
+public:
+    string name;
+    queue<string> messageQueue;
+    set<string> friends;
+
+    User(string uname) {
+        name = uname;
+    }
+
+    void receiveMessage(const string& message) {
+        messageQueue.push(message);
+    }
+
+    void showMessages() {
+        cout << "\nMessages for " << name << ":\n";
+        while (!messageQueue.empty()) {
+            cout << " - " << messageQueue.front() << endl;
+            messageQueue.pop();
+        }
+        cout << endl;
+    }
+
+    void addFriend(const string& friendName) {
+        friends.insert(friendName);
+    }
+
+    bool isFriend(const string& friendName) {
+        return friends.count(friendName) > 0;
+    }
+};
+
+// ChatApp class
+class ChatApp {
+private:
+    unordered_map<string, User*> users;
+
+public:
+    void addUser(const string& name) {
+        if (users.count(name) == 0) {
+            users[name] = new User(name);
+            cout << "User " << name << " added.\n";
+        } else {
+            cout << "User " << name << " already exists.\n";
+        }
+    }
+
+    void addFriendship(const string& u1, const string& u2) {
+        if (users.count(u1) == 0 || users.count(u2) == 0) {
+            cout << "Both users must exist to be friends.\n";
+            return;
+        }
+        users[u1]->addFriend(u2);
+        users[u2]->addFriend(u1);
+        cout << u1 << " and " << u2 << " are now friends.\n";
+    }
+
+    void sendMessage(const string& from, const string& to, const string& message) {
+        if (users.count(from) == 0 || users.count(to) == 0) {
+            cout << "Both users must exist to send messages.\n";
+            return;
+        }
+
+        if (!users[from]->isFriend(to)) {
+            cout << from << " and " << to << " are not friends. Message not sent.\n";
+            return;
+        }
+
+        string fullMessage = from + ": " + message;
+        users[to]->receiveMessage(fullMessage);
+        cout << "Message sent from " << from << " to " << to << ".\n";
+    }
+
+    void showUserMessages(const string& name) {
+        if (users.count(name) == 0) {
+            cout << "User does not exist.\n";
+            return;
+        }
+        users[name]->showMessages();
+    }
+
+    ~ChatApp() {
+        for (auto& pair : users) {
+            delete pair.second;
+        }
+    }
+};
+
+// Main simulation
+int main() {
+    ChatApp app;
+    int choice;
+    string u1, u2, msg;
+
+    while (true) {
+        cout << "\n--- Chat App Menu ---\n";
+        cout << "1. Add User\n2. Add Friendship\n3. Send Message\n4. Show User Messages\n5. Exit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice) {
+        case 1:
+            cout << "Enter username: ";
+            getline(cin, u1);
+            app.addUser(u1);
+            break;
+        case 2:
+            cout << "Enter first user: ";
+            getline(cin, u1);
+            cout << "Enter second user: ";
+            getline(cin, u2);
+            app.addFriendship(u1, u2);
+            break;
+        case 3:
+            cout << "Enter sender: ";
+            getline(cin, u1);
+            cout << "Enter receiver: ";
+            getline(cin, u2);
+            cout << "Enter message: ";
+            getline(cin, msg);
+            app.sendMessage(u1, u2, msg);
+            break;
+        case 4:
+            cout << "Enter username to view messages: ";
+            getline(cin, u1);
+            app.showUserMessages(u1);
+            break;
+        case 5:
+            cout << "Exiting...\n";
+            return 0;
+        default:
+            cout << "Invalid choice.\n";
+        }
+    }
+
+    return 0;
+}
