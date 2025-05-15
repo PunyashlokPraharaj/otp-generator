@@ -1,3 +1,5 @@
+//link: https://github.com/PunyashlokPraharaj/otp-generator
+
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
