@@ -7,24 +7,18 @@
 #include <vector>
 #include <string>
 #include <set>
-
 using namespace std;
-
-// User class
 class User {
 public:
     string name;
     queue<string> messageQueue;
     set<string> friends;
-
     User(string uname) {
         name = uname;
     }
-
     void receiveMessage(const string& message) {
         messageQueue.push(message);
     }
-
     void showMessages() {
         cout << "\nMessages for " << name << ":\n";
         while (!messageQueue.empty()) {
@@ -33,7 +27,6 @@ public:
         }
         cout << endl;
     }
-
     void addFriend(const string& friendName) {
         friends.insert(friendName);
     }
@@ -42,12 +35,9 @@ public:
         return friends.count(friendName) > 0;
     }
 };
-
-// ChatApp class
 class ChatApp {
 private:
     unordered_map<string, User*> users;
-
 public:
     void addUser(const string& name) {
         if (users.count(name) == 0) {
@@ -98,8 +88,6 @@ public:
         }
     }
 };
-
-// Main simulation
 int main() {
     ChatApp app;
     int choice;
